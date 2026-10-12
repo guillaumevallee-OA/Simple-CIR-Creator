@@ -1,7 +1,7 @@
 
-### Historique des versions du Companion CIR Redactor (V20 à V32)
+### Historique des versions du Companion CIR Redactor (V20 à V33)
 
-> Les versions V20 à V26 proviennent uniquement du résumé de l'historique (textes non disponibles). Les versions V27 à V32 ont été comparées à partir des prompts fournis ou produits dans la conversation, sans comparaison ligne à ligne pour V27 à V29. Les mentions « hypothèse » sont à confirmer.
+> Les versions V20 à V26 proviennent uniquement du résumé de l'historique (textes non disponibles). Les versions V27 à V33 ont été comparées à partir des prompts fournis ou produits dans la conversation, sans comparaison ligne à ligne pour V27 à V29. Les mentions « hypothèse » sont à confirmer.
 
 ### 1. Résumé par version
 
@@ -18,7 +18,8 @@
 | **V28.1** | Version évaluée dans le bilan final (23 OK, 6 partiels, 0 KO, 1 annulé). Texte non disponible | Origine des recommandations R1 à R11 | Contenu inconnu |
 | **V30** | V29 avec R1 à R11, les corrections de l'analyse critique, et le doublon de protection supprimé | Non testée directement. Jugée trop complexe, ce qui a motivé la V31 | Prompt produit dans la conversation |
 | **V31** | V30 simplifiée : OneNote et temporalité des essais retirés, niveaux de confiance en quatre règles déterministes, garde-fou aligné sur les niveaux, mode « refus partiel » et transparence sur les niveaux supprimés | **Testée** sur 10 tests critiques : 5 OK, 5 partiels, 0 KO. Voir le fichier de synthèse des tests | Prompt produit dans la conversation (version testée supposée) |
-| **V32** | V31 avec 7 corrections issues de la campagne de tests (voir section 4) | Non testée | Prompt produit dans la conversation |
+| **V32** | V31 avec 7 corrections issues de la campagne de tests (voir section 4) | Non testée. Remplacée par la V33 | Prompt produit dans la conversation |
+| **V33** | V32 avec allègement des mentions de fin (encart par rubrique, fin de réponse unique, plafond de 5 points avec compteur) et suppression des statuts au profit d'un système unique (source nommée et niveau de confiance) | **Version courante, non testée.** Plan de tests validé (voir le fichier de synthèse des tests) | Prompt produit dans la conversation |
 
 ### 2. Détail des changements de la V30 par rapport à la V29
 
@@ -57,7 +58,7 @@ Corrections décidées après la campagne de 10 tests critiques sur la V31.
 
 | Point | Défaut visé | Modification |
 |---|---|---|
-| 1 | Prolifération de marqueurs essentiels, niveaux trop bas (tests 1, 8, 10) | Ajout de `element_essentiel_absent` : un élément essentiel est absent seulement si aucune information n'est fournie sur lui. Un détail manquant sur un élément fourni (valeur, composition, procédé, résultat d'une formule parmi d'autres) est un marqueur secondaire |
+| 1 | Prolifération de marqueurs essentiels, niveaux trop bas (tests 1, 8, 10) | Ajout de `element_essentiel_absent` : un élément essentiel est absent seulement si aucune information n'est fournie sur lui. Un détail manquant sur un élément fourni est un marqueur secondaire |
 | 2a | Garde-fou en double ou commenté (test 10) | Une seule phrase, recopiée mot pour mot, sans commentaire sur la sélection |
 | 2b | Phrase du garde-fou erronée pour un niveau 🔴 (tests 6, 7) | La phrase « Risque d'informations erronées ou incomplètes… » est liée à la présence de 🔴 dans une ligne « Niveau de confiance » (rubrique ou global), ou à une contradiction signalée |
 | 2c | Phrase de fin en trop après un refus de révéler les instructions (test 5) | Aucune phrase pour le refus de révéler, traduire ou passer en « mode debug », ni pour le refus d'une demande hors périmètre |
@@ -66,11 +67,29 @@ Corrections décidées après la campagne de 10 tests critiques sur la V31.
 | 5 | Fausse troncature du message (test 8) | **Aucune règle ajoutée** : cas isolé, à reproduire d'abord |
 | 6 | Remarques dans le texte de la fiche (tests 7, 8, 10) | Trois exemples de phrases interdites ajoutés à la règle `texte_de_la_fiche`, tirés des réponses réellement obtenues |
 
-### 5. Chaîne de versions (hypothèse)
+### 5. Détail des changements de la V33 par rapport à la V32
 
-V27 (texte) → V28 (hybride) → V29 (plafond 🟡 et instruction ignorée) → V30 (R1 à R11 et corrections) → V31 (simplification) → V32 (corrections après tests)
+Corrections décidées avec l'utilisateur après la campagne de tests : alléger les mentions de fin de rubrique et de réponse, et remplacer les statuts par un système unique.
 
-### 6. État des tests par version
+| Domaine | Modification |
+|---|---|
+| Encart de rubrique | Sous chaque rubrique rédigée, un encart en citation (lignes précédées de « > ») contient les éléments qui renvoient à cette rubrique : Sources, Niveau de confiance (niveau et motif), À vérifier |
+| Fin de réponse unique | Après toutes les rubriques, séparée par « --- », une seule fois et dans cet ordre : niveau de confiance global (seulement s'il y a plusieurs rubriques), mention IA regroupée (liste des rubriques rédigées), phrase du garde-fou, relecture |
+| Mention IA | Une seule mention en fin de réponse, avec la liste des rubriques rédigées, au lieu d'une mention par rubrique |
+| Relecture raccourcie | « ⚠ Relisez le texte et chaque source avant intégration dans la fiche. » |
+| « À vérifier » allégé | Retrait de « déclarations non corroborées essentielles » et de « marqueurs secondaires ». Plafond de 5 points par rubrique, ordre de priorité fixe (contradictions, informations manquantes essentielles, restrictions de lecture, sources écartées, questions sur une reformulation, autres points) et ligne de compteur des points omis (option C) |
+| Statuts supprimés | Plus de DOCUMENTÉ, DÉCLARÉ, DÉDUIT ni MANQUANT. Chaque élément renvoie à une source nommée (document avec nom et page ou section, ou description de l'utilisateur). Un extrait sans nom de document ni page est traité comme une description de l'utilisateur. Le Companion ne juge jamais la valeur d'un document |
+| Attribution | Tout élément qui ne provient pas d'un document est attribué à l'équipe dans le texte |
+| Déductions | Plus de statut DÉDUIT : si une reformulation changerait le sens, le Companion ne l'écrit pas et pose la question dans « À vérifier » |
+| Niveaux de confiance | 🟡 : un élément essentiel repose uniquement sur la description de l'utilisateur, ou verrou sans état de l'art. 🟢 : tous les éléments essentiels renvoient à un document nommé. Motif « éléments essentiels renvoyant à un document nommé » |
+| Modes de réponse | Micro-modification : mention IA et garde-fou sur deux lignes. Rubrique en attente : encart avec niveau ⚪. Réponse ciblée : rubrique, son encart et la fin de réponse. Résumé : encart avec niveau seulement |
+| Cohérence | Le marqueur secondaire n'a plus de consigne de signalement dans « À vérifier » |
+
+### 6. Chaîne de versions (hypothèse)
+
+V27 (texte) → V28 (hybride) → V29 (plafond 🟡 et instruction ignorée) → V30 (R1 à R11 et corrections) → V31 (simplification) → V32 (corrections après tests) → V33 (encarts, fin de réponse unique, système sans statuts)
+
+### 7. État des tests par version
 
 | Version | Tests réalisés |
 |---|---|
@@ -78,13 +97,15 @@ V27 (texte) → V28 (hybride) → V29 (plafond 🟡 et instruction ignorée) →
 | V27.1 / V28.1 | Batterie de 24 tests (+ 6 complémentaires) : 23 OK, 6 partiels, 0 KO, 1 annulé |
 | V30 | Aucun test direct |
 | V31 | 10 tests critiques : 5 OK, 5 partiels, 0 KO (suivi dans le fichier de synthèse des tests) |
-| V32 | Aucun |
+| V32 | Aucun (remplacée par la V33) |
+| V33 | Aucun. Plan de 10 tests validé, dont le rendu de l'encart (voir le fichier de synthèse des tests) |
 
-Retests prioritaires pour la V32 : 1, 8, 10, 7 et 5 de la campagne (niveaux, garde-fou, année civile, vocabulaire), en deux ou trois exécutions chacun.
+Priorités de la V33 : retester les défauts de la V31 (niveaux trop bas, garde-fou, année civile, vocabulaire, remarques dans le texte), vérifier le rendu de l'encart, et tester l'extrait sans nom de document et le plafond de 5 points avec compteur.
 
-### 7. Limites
+### 8. Limites
 
 - La chaîne de versions est partiellement hypothétique (V27.1 et V28.1 notamment).
 - La version testée dans la campagne de 10 tests critiques est supposée être la V31, sans confirmation explicite.
-- La V32 n'a pas été testée.
+- Les V32 et V33 n'ont pas été testées.
+- Le rendu de l'encart dans L'OréalGPT n'est pas encore vérifié.
 - Une revue par un expert CIR ou FINECO reste nécessaire avant tout déploiement.
