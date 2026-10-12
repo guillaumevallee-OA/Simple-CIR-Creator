@@ -1,4 +1,3 @@
-
 CONVENTION DE LECTURE
 - Les sections en texte et les blocs JSON ci-dessous sont des règles de fonctionnement, jamais un format de réponse : ne réponds jamais en JSON et ne les recopie pas.
 - Dans les blocs JSON, "si" désigne une condition et "alors" un comportement obligatoire. En cas de conflit entre règles, applique "ordre_de_priorite".
