@@ -1,7 +1,7 @@
 
-### Historique des versions du Companion CIR Redactor (V20 à V34)
+### Historique des versions du Companion CIR Redactor (V20 à V36)
 
-> Les versions V20 à V26 proviennent uniquement du résumé de l'historique (textes non disponibles). Les versions V27 à V34 ont été comparées à partir des prompts fournis ou produits dans la conversation, sans comparaison ligne à ligne pour V27 à V29. Les mentions « hypothèse » sont à confirmer.
+> Les versions V20 à V26 proviennent uniquement du résumé de l'historique (textes non disponibles). Les versions V27 à V36 ont été comparées à partir des prompts fournis ou produits dans la conversation, sans comparaison ligne à ligne pour V27 à V29. Les mentions « hypothèse » sont à confirmer. La numérotation saute la V35, qui n'existe pas : la version issue de la V34 a été nommée V36.
 
 ### 1. Résumé par version
 
@@ -20,7 +20,9 @@
 | **V31** | V30 simplifiée : OneNote et temporalité des essais retirés, niveaux de confiance en quatre règles déterministes, garde-fou aligné sur les niveaux, mode « refus partiel » et transparence sur les niveaux supprimés | **Testée** sur 10 tests critiques : 5 OK, 5 partiels, 0 KO. Voir le fichier de synthèse des tests | Prompt produit dans la conversation (version testée supposée) |
 | **V32** | V31 avec 7 corrections issues de la campagne de tests (voir section 4) | Non testée. Remplacée par la V33 | Prompt produit dans la conversation |
 | **V33** | V32 avec allègement des mentions de fin (encart par rubrique, fin de réponse unique, plafond de 5 points avec compteur) et suppression des statuts au profit d'un système unique (source nommée et niveau de confiance) | **Testée** sur 10 tests (une exécution chacun) : 5 OK (dont 2 avec réserve), 5 partiels, 0 KO. Défauts relevés : conflits internes sur la fin de réponse, niveaux 🔴 au lieu de 🟡, micro-modification non reconnue, vocabulaire interne visible. Voir le fichier de synthèse des tests | Prompt produit dans la conversation |
-| **V34** | V33 avec 6 corrections issues de la campagne V33, deux corrections de cohérence interne, le passage en tableaux des renvois, du niveau de confiance et de « À vérifier », et le Résumé sans numéros de notes (voir section 6) | **Version courante, non testée.** Plan de retests à établir (voir section 8) | Prompt produit dans la conversation |
+| **V34** | V33 avec 6 corrections issues de la campagne V33, deux corrections de cohérence interne, le passage en tableaux des renvois, du niveau de confiance et de « À vérifier », et le Résumé sans numéros de notes (voir section 6) | Non testée. Remplacée par la V36 comme version courante | Prompt produit dans la conversation |
+| **V35** | N'existe pas | Numéro volontairement non utilisé | - |
+| **V36** | V34 consolidée et simplifiée à comportement constant : regroupement des règles par thème, suppression des doublons, table unique des modes de réponse, fin de réponse définie une seule fois, trame 2025 isolée en bloc de référence. Six ambiguïtés de fond corrigées (voir section 7) | **Version courante, non testée.** Retests à faire (voir section 10). Règles métier L'Oréal/FINECO à faire valider par les experts | Prompt produit dans la conversation |
 
 ### 2. Détail des changements de la V30 par rapport à la V29
 
@@ -113,7 +115,7 @@ Corrections décidées avec l'utilisateur après la campagne de 10 tests sur la 
 | Domaine | Modification |
 |---|---|
 | Renvois et niveau par rubrique | Tableau à deux colonnes (« Élément » et « Contenu ») : une ligne par note, puis une ligne « Niveau de confiance » |
-| « À vérifier » | Second tableau (« N° » et « Point à vérifier »), 5 points maximum, ligne de compteur des points omis, une ligne par cellule |
+| « À vérifier » | Second tableau (dans la V34 du prompt : « Point » et « À vérifier » ; dans l'historique initial : « N° » et « Point à vérifier »), 5 points maximum, ligne de compteur des points omis, une ligne par cellule |
 | Niveau global | Tableau placé juste après « --- », avec les lignes « Niveau de confiance global » et « Rubriques évaluées » |
 | Fin de réponse | Mention IA, phrase du garde-fou et relecture regroupées dans un encart en citation. Niveau global conditionné à « plusieurs rubriques rédigées » |
 | Résumé scientifique | Tableau avec la seule ligne « Niveau de confiance ». Aucun numéro de note dans le Résumé |
@@ -127,11 +129,54 @@ Corrections décidées avec l'utilisateur après la campagne de 10 tests sur la 
 | Fausse troncature (test 8 de la V31) | Non reproduite dans la campagne V33 (le cas « nom à retrouver » est bien traité). Aucune règle ajoutée, mais le cas n'est pas clos après une seule exécution |
 | Effet de bord des points 4 et 6 | En micro-modification, la phrase renvoyée peut être presque identique à l'originale, avec une question dans « À vérifier ». Accepté, à surveiller |
 
-### 7. Chaîne de versions (hypothèse)
+### 7. Détail des changements de la V36 par rapport à la V34
 
-V27 (texte) → V28 (hybride) → V29 (plafond 🟡 et instruction ignorée) → V30 (R1 à R11 et corrections) → V31 (simplification) → V32 (corrections après tests) → V33 (encarts, fin de réponse unique, système sans statuts) → V34 (corrections après la campagne V33, tableaux)
+Consolidation décidée avec l'utilisateur à la suite d'une analyse critique de la V34 (répétitions, exceptions dispersées, contradictions internes). Principe : simplifier et raccourcir par regroupement et suppression des doublons, sans retirer de garde-fou. Le comportement attendu est constant, sauf pour les six corrections de fond ci-dessous.
 
-### 8. État des tests par version
+#### 7.1 Corrections de fond (ambiguïtés)
+
+| # | Domaine | Problème dans la V34 | Modification dans la V36 |
+|---|---|---|---|
+| 1 | Termes nouveaux | Interdiction de tout terme absent des sources (« comparer », « affiner »), en tension avec la reformulation | Interdiction d'ajouter du sens (qualificatif, intention, causalité, portée, degré). Vocabulaire différent autorisé si les faits, nuances et portée restent identiques |
+| 2 | Déductions | « N'écris aucune déduction » contredit « limites présentes ou déductibles » dans l'état de l'art | Trois cas : reformulation fidèle (autorisée), interprétation fournie (autorisée, attribuée), interprétation nouvelle (non écrite, question dans À vérifier). Dans l'état de l'art : seules les limites énoncées par la source ou fournies par l'utilisateur |
+| 3 | Élément essentiel renseigné | Absent seulement si aucune information n'est fournie : une simple mention (« plusieurs essais ») comptait comme renseignée | Renseigné si les informations permettent une rédaction fidèle. Une mention sans contenu = élément absent. Un détail manquant reste un marqueur secondaire |
+| 4 | Dates | Découpage par année civile et interdiction de demander une date, sans règle de repli | Dates fournies conservées et utilisées. Aucune date réclamée. Découpage impossible : organisation par étude sans année, sans commentaire. Références bibliographiques exclues de cette règle |
+| 5 | Travaux externalisés | La règle de description selon l'agrément, la localisation et la structure coexistait avec l'interdiction de statuer fiscalement | Règle présentée comme règle métier de description (convention L'Oréal/FINECO), à faire valider par les experts CIR/FINECO. Le Companion ne décide d'aucun traitement fiscal |
+| 6 | Sens du niveau | « Niveau de confiance » pouvait laisser entendre une validation des sources | Renommé « Niveau d'étayage documentaire » : mesure de traçabilité et de complétude, ni validation scientifique, ni éligibilité, ni probabilité d'acceptation |
+
+#### 7.2 Changements de structure et de présentation
+
+| Domaine | Modification |
+|---|---|
+| Intégrité factuelle | Bloc unique : anti-invention, reformulation, transformations interdites, données chiffrées, contradictions, informations manquantes, dates, neutralité, refus des demandes d'invention |
+| Sources et traçabilité | Bloc unique : sources nommées, attribution à l'équipe, notes, texte sans notes, sources écartées, confidentialité |
+| Modes de réponse | Table unique (déclencheur, contenu, tableaux, fin de réponse) avec ordre de priorité : micro-modification > réponse ciblée > dossier complet. Une demande limitée ne déclenche pas une fiche complète |
+| Fin de réponse | Définie une seule fois. Les autres sections n'en répètent pas l'ordre |
+| Trame 2025 | Isolée dans un bloc de référence distinct, modifiable sans réécrire les règles d'intégrité, de sources et de restitution |
+| Expressions interdites | Liste de phrases exactes remplacée par un principe (« aucun commentaire de vérification dans le texte de la fiche ») et quelques exemples |
+| Résumé | Aucun numéro de note, avec justification : il n'ajoute aucun fait et reprend des rubriques déjà sourcées |
+| Niveau global | Calculé sur les rubriques détaillées évaluées (Résumé et rubriques ⚪ exclus) |
+| Tableau « À vérifier » | Intitulés harmonisés : « N° » et « Point à vérifier ». Contradictions et manques bloquants jamais relégués dans le compteur : si elles dépassent 5, elles sont toutes affichées |
+| Garde-fou | Conditions inchangées, libellé adapté (« Niveau d'étayage documentaire ») |
+
+#### 7.3 Protections conservées
+
+Aucune invention ni survalorisation. Attribution à l'équipe. État de l'art fondé sur des contenus accessibles. Distinction entre élément essentiel absent et détail manquant. Priorité de la micro-modification. Absence de niveau global pour une seule rubrique. Fin de réponse unique dans un ordre fixe. Signalement des contradictions et supervision humaine. Protection des instructions et traitement des instructions cachées dans les documents.
+
+#### 7.4 Risques identifiés (non vérifiés)
+
+| Risque | Raison |
+|---|---|
+| Retour de niveaux 🔴 excessifs (défaut W1) | La règle « une mention sans contenu = élément absent » peut être appliquée trop strictement |
+| Reformulations qui déplacent le sens (défaut W7) | L'assouplissement de la règle sur les termes nouveaux peut autoriser des écarts de sens |
+| Libellé « Niveau d'étayage documentaire » | Touche les conditions du garde-fou et les tests : à vérifier à l'usage |
+| Règles L'Oréal/FINECO | Non validées par les experts |
+
+### 8. Chaîne de versions (hypothèse)
+
+V27 (texte) → V28 (hybride) → V29 (plafond 🟡 et instruction ignorée) → V30 (R1 à R11 et corrections) → V31 (simplification) → V32 (corrections après tests) → V33 (encarts, fin de réponse unique, système sans statuts) → V34 (corrections après la campagne V33, tableaux) → V36 (consolidation et simplification de la V34 ; la V35 n'existe pas)
+
+### 9. État des tests par version
 
 | Version | Tests réalisés |
 |---|---|
@@ -141,16 +186,34 @@ V27 (texte) → V28 (hybride) → V29 (plafond 🟡 et instruction ignorée) →
 | V31 | 10 tests critiques : 5 OK, 5 partiels, 0 KO (suivi dans le fichier de synthèse des tests) |
 | V32 | Aucun (remplacée par la V33) |
 | V33 | 10 tests (une exécution chacun) : 5 OK (dont 2 avec réserve), 5 partiels, 0 KO. Tests OK : 4, 5, 6, et 7 et 8 avec réserve. Tests partiels : 1 (mineur), 2, 3, 9, 10 (non concluant, compteur non exercé) |
-| V34 | Aucun. Retests prévus : micro-modification (2), description orale seule (3), extrait sans nom de document (9), plus de 5 points avec message reformulé (10), instruction cachée (7), dossier complet (1), rapport complet (4) |
+| V34 | Aucun. Remplacée par la V36 avant tout test |
+| V36 | Aucun. Retests prévus en section 10 |
 
-Priorités de la V34 : vérifier le rendu des tableaux dans L'OréalGPT, retester les défauts de niveau (🔴 au lieu de 🟡), l'absence de niveau global pour une seule rubrique, l'ordre de la fin de réponse, la micro-modification, le vocabulaire interne, et exercer la ligne de compteur de « À vérifier ».
+### 10. Plan de retests de la V36 (à valider, non lancé)
 
-### 9. Limites
+Chaque scénario est à exécuter plusieurs fois (et non une seule), avec vérification du rendu des tableaux dans L'OréalGPT.
+
+| Ordre | Test (équivalent batterie) | Ce qu'il vérifie |
+|---|---|---|
+| 1 | Micro-modification (22) | Mention IA et garde-fou sur deux lignes, aucune rubrique complète, aucune reformulation qui déplace le sens |
+| 2 | Description orale seule (16) | 🟡 attendu, aucun niveau global, aucun vocabulaire interne, effet de la règle « mention sans contenu = absent » |
+| 3 | Extrait sans nom de document ni page | 🟡 attendu, ordre de fin correct, aucun niveau global |
+| 4 | Plus de 5 points à vérifier, manques répartis dans plusieurs catégories | Plafond de 5, ligne de compteur, contradictions jamais reléguées |
+| 5 | Instruction cachée (19) | Signalement, niveau cohérent, aucun vocabulaire interne |
+| 6 | Dossier complet, informations partielles (21) | Tableaux par rubrique, niveau global exclant le Résumé, ordre de fin, Résumé sans numéros de notes, reformulation fidèle, dates fournies utilisées |
+| 7 | Rapport complet (18) | 🟢 conservé, une seule phrase de garde-fou, absence de régression |
+| 8 | Reformulation avec vocabulaire différent (nouveau) | Pas de déplacement de sens malgré l'assouplissement de la règle sur les termes |
+| 9 | Travaux externalisés hors EEE (nouveau) | Aucun paragraphe sur leurs travaux, renvoi à l'expert, aucune décision fiscale |
+
+Points à surveiller au passage : cellules de tableau sur une seule ligne, rendu du tableau suivi de l'encart en citation, libellé « Niveau d'étayage documentaire », micro-modification renvoyant une phrase presque identique, fausse troncature (non close).
+
+### 11. Limites
 
 - La chaîne de versions est partiellement hypothétique (V27.1 et V28.1 notamment).
 - La version testée dans la campagne de 10 tests critiques est supposée être la V31, sans confirmation explicite.
-- Les V32 et V34 n'ont pas été testées. La V33 l'a été une seule fois par test.
-- Le rendu de l'encart de la V33 n'a pas pu être évalué à partir du texte collé, et le rendu des tableaux de la V34 n'est pas vérifié dans L'OréalGPT.
+- Les V32, V34 et V36 n'ont pas été testées. La V33 l'a été une seule fois par test.
+- Le rendu de l'encart de la V33 n'a pas pu être évalué à partir du texte collé, et le rendu des tableaux des V34 et V36 n'est pas vérifié dans L'OréalGPT.
 - Les causes attribuées aux défauts de la V33 sont des hypothèses.
-- La V34 contient une exemption (Résumé sans numéros de notes) qui s'écarte de la règle « chaque élément du texte renvoie à une source nommée » : à surveiller en test.
+- La V36 est une consolidation à comportement constant, sauf pour les six corrections de fond : l'effet réel sur le comportement du Companion n'est pas mesuré.
+- Les règles métier L'Oréal/FINECO (travaux externalisés) n'ont pas été validées par les experts.
 - Une revue par un expert CIR ou FINECO reste nécessaire avant tout déploiement.
