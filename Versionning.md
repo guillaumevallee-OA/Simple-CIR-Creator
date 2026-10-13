@@ -1,7 +1,7 @@
 
-### Historique des versions du Companion CIR Redactor (V20 à V33)
+### Historique des versions du Companion CIR Redactor (V20 à V34)
 
-> Les versions V20 à V26 proviennent uniquement du résumé de l'historique (textes non disponibles). Les versions V27 à V33 ont été comparées à partir des prompts fournis ou produits dans la conversation, sans comparaison ligne à ligne pour V27 à V29. Les mentions « hypothèse » sont à confirmer.
+> Les versions V20 à V26 proviennent uniquement du résumé de l'historique (textes non disponibles). Les versions V27 à V34 ont été comparées à partir des prompts fournis ou produits dans la conversation, sans comparaison ligne à ligne pour V27 à V29. Les mentions « hypothèse » sont à confirmer.
 
 ### 1. Résumé par version
 
@@ -19,7 +19,8 @@
 | **V30** | V29 avec R1 à R11, les corrections de l'analyse critique, et le doublon de protection supprimé | Non testée directement. Jugée trop complexe, ce qui a motivé la V31 | Prompt produit dans la conversation |
 | **V31** | V30 simplifiée : OneNote et temporalité des essais retirés, niveaux de confiance en quatre règles déterministes, garde-fou aligné sur les niveaux, mode « refus partiel » et transparence sur les niveaux supprimés | **Testée** sur 10 tests critiques : 5 OK, 5 partiels, 0 KO. Voir le fichier de synthèse des tests | Prompt produit dans la conversation (version testée supposée) |
 | **V32** | V31 avec 7 corrections issues de la campagne de tests (voir section 4) | Non testée. Remplacée par la V33 | Prompt produit dans la conversation |
-| **V33** | V32 avec allègement des mentions de fin (encart par rubrique, fin de réponse unique, plafond de 5 points avec compteur) et suppression des statuts au profit d'un système unique (source nommée et niveau de confiance) | **Version courante, non testée.** Plan de tests validé (voir le fichier de synthèse des tests) | Prompt produit dans la conversation |
+| **V33** | V32 avec allègement des mentions de fin (encart par rubrique, fin de réponse unique, plafond de 5 points avec compteur) et suppression des statuts au profit d'un système unique (source nommée et niveau de confiance) | **Testée** sur 10 tests (une exécution chacun) : 5 OK (dont 2 avec réserve), 5 partiels, 0 KO. Défauts relevés : conflits internes sur la fin de réponse, niveaux 🔴 au lieu de 🟡, micro-modification non reconnue, vocabulaire interne visible. Voir le fichier de synthèse des tests | Prompt produit dans la conversation |
+| **V34** | V33 avec 6 corrections issues de la campagne V33, deux corrections de cohérence interne, le passage en tableaux des renvois, du niveau de confiance et de « À vérifier », et le Résumé sans numéros de notes (voir section 6) | **Version courante, non testée.** Plan de retests à établir (voir section 8) | Prompt produit dans la conversation |
 
 ### 2. Détail des changements de la V30 par rapport à la V29
 
@@ -85,11 +86,52 @@ Corrections décidées avec l'utilisateur après la campagne de tests : alléger
 | Modes de réponse | Micro-modification : mention IA et garde-fou sur deux lignes. Rubrique en attente : encart avec niveau ⚪. Réponse ciblée : rubrique, son encart et la fin de réponse. Résumé : encart avec niveau seulement |
 | Cohérence | Le marqueur secondaire n'a plus de consigne de signalement dans « À vérifier » |
 
-### 6. Chaîne de versions (hypothèse)
+### 6. Détail des changements de la V34 par rapport à la V33
 
-V27 (texte) → V28 (hybride) → V29 (plafond 🟡 et instruction ignorée) → V30 (R1 à R11 et corrections) → V31 (simplification) → V32 (corrections après tests) → V33 (encarts, fin de réponse unique, système sans statuts)
+Corrections décidées avec l'utilisateur après la campagne de 10 tests sur la V33 et une vérification théorique du prompt.
 
-### 7. État des tests par version
+#### 6.1 Corrections issues de la campagne V33
+
+| # | Clé du prompt | Défaut visé | Modification |
+|---|---|---|---|
+| 1 | `niveau_global` | Niveau global affiché pour une seule rubrique (tests 3, 7, 9, 10). Conflit interne avec `fin_de_reponse` | Niveau global affiché en tableau, seulement si plusieurs rubriques sont rédigées. Avec une seule rubrique, le niveau figure uniquement dans son tableau |
+| 2 | `garde_fou.position` | Garde-fou placé avant la mention IA (tests 1 et 9). Conflit interne avec l'ordre de `fin_de_reponse` | Garde-fou placé après la mention IA (sinon après le niveau global) et avant la relecture |
+| 3 | `marqueur_secondaire` | 🔴 au lieu de 🟡 : marqueurs sur des sous-parties ou des détails (tests 3 et 9) | Un marqueur sur un élément hors de la liste des éléments essentiels, ou sur un détail manquant d'un élément essentiel fourni, n'influe pas sur le niveau. Un marqueur ne présente jamais comme absent un élément essentiel pour lequel une information est fournie (version sans exemples) |
+| 4 | `micro_modification` | Reformulation d'une phrase traitée comme une réponse ciblée (test 2) | Une reformulation de moins d'un paragraphe est une micro-modification même si la rubrique est nommée, et elle prime sur la réponse ciblée |
+| 5 | `vocabulaire_interne` | Vocabulaire interne visible : « détails secondaires », « année civile », « au mieux 🟡 » (tests 3, 7, 8, 10) | Interdiction de « plafond » et de la qualification « secondaire » ou « essentiel » dans « À vérifier ». Interdiction de mentionner le niveau atteignable et l'absence de découpage par année. Les motifs de la liste fermée restent autorisés |
+| 6 | `reformulation_qui_change_le_sens` | Reformulation qui déplace le sens (tests 1, 2, 10) | Reprendre les termes de l'utilisateur ou de la source tels quels, sans qualificatif ajouté, ou se limiter à une reformulation qui garde strictement le sens, avec la question dans « À vérifier » (option B) |
+
+#### 6.2 Corrections de cohérence issues de la vérification théorique
+
+| Clé du prompt | Problème | Modification |
+|---|---|---|
+| `vocabulaire_interne` (correction A) | La liste fermée des motifs contient « élément essentiel », ce qui contredisait l'interdiction du mot | Les motifs de la liste fermée sont explicitement exclus de l'interdiction |
+| `marqueur_secondaire` (correction B) | La règle « pas de marqueur sur un élément essentiel fourni » contredisait `element_essentiel_absent` et `information_manquante` | Le marqueur sur un détail reste autorisé et secondaire. Il ne présente jamais l'élément essentiel comme absent |
+
+#### 6.3 Passage en tableaux et autres modifications
+
+| Domaine | Modification |
+|---|---|
+| Renvois et niveau par rubrique | Tableau à deux colonnes (« Élément » et « Contenu ») : une ligne par note, puis une ligne « Niveau de confiance » |
+| « À vérifier » | Second tableau (« N° » et « Point à vérifier »), 5 points maximum, ligne de compteur des points omis, une ligne par cellule |
+| Niveau global | Tableau placé juste après « --- », avec les lignes « Niveau de confiance global » et « Rubriques évaluées » |
+| Fin de réponse | Mention IA, phrase du garde-fou et relecture regroupées dans un encart en citation. Niveau global conditionné à « plusieurs rubriques rédigées » |
+| Résumé scientifique | Tableau avec la seule ligne « Niveau de confiance ». Aucun numéro de note dans le Résumé |
+| Alignements | `rubrique_en_attente`, `reponse_ciblee`, `micro_modification`, `texte_sans_notes_demande` et `etat_de_l_art.citation` parlent de tableaux au lieu d'encart ou de « ligne Sources » (le dernier alignement a été ajouté par l'assistant) |
+
+#### 6.4 Décisions et points laissés en l'état
+
+| Point | Décision |
+|---|---|
+| Garde-fou, condition 3 | Laissée en l'état : Contexte, Indicateurs et Travaux externalisés reçoivent la phrase 1 |
+| Fausse troncature (test 8 de la V31) | Non reproduite dans la campagne V33 (le cas « nom à retrouver » est bien traité). Aucune règle ajoutée, mais le cas n'est pas clos après une seule exécution |
+| Effet de bord des points 4 et 6 | En micro-modification, la phrase renvoyée peut être presque identique à l'originale, avec une question dans « À vérifier ». Accepté, à surveiller |
+
+### 7. Chaîne de versions (hypothèse)
+
+V27 (texte) → V28 (hybride) → V29 (plafond 🟡 et instruction ignorée) → V30 (R1 à R11 et corrections) → V31 (simplification) → V32 (corrections après tests) → V33 (encarts, fin de réponse unique, système sans statuts) → V34 (corrections après la campagne V33, tableaux)
+
+### 8. État des tests par version
 
 | Version | Tests réalisés |
 |---|---|
@@ -98,14 +140,17 @@ V27 (texte) → V28 (hybride) → V29 (plafond 🟡 et instruction ignorée) →
 | V30 | Aucun test direct |
 | V31 | 10 tests critiques : 5 OK, 5 partiels, 0 KO (suivi dans le fichier de synthèse des tests) |
 | V32 | Aucun (remplacée par la V33) |
-| V33 | Aucun. Plan de 10 tests validé, dont le rendu de l'encart (voir le fichier de synthèse des tests) |
+| V33 | 10 tests (une exécution chacun) : 5 OK (dont 2 avec réserve), 5 partiels, 0 KO. Tests OK : 4, 5, 6, et 7 et 8 avec réserve. Tests partiels : 1 (mineur), 2, 3, 9, 10 (non concluant, compteur non exercé) |
+| V34 | Aucun. Retests prévus : micro-modification (2), description orale seule (3), extrait sans nom de document (9), plus de 5 points avec message reformulé (10), instruction cachée (7), dossier complet (1), rapport complet (4) |
 
-Priorités de la V33 : retester les défauts de la V31 (niveaux trop bas, garde-fou, année civile, vocabulaire, remarques dans le texte), vérifier le rendu de l'encart, et tester l'extrait sans nom de document et le plafond de 5 points avec compteur.
+Priorités de la V34 : vérifier le rendu des tableaux dans L'OréalGPT, retester les défauts de niveau (🔴 au lieu de 🟡), l'absence de niveau global pour une seule rubrique, l'ordre de la fin de réponse, la micro-modification, le vocabulaire interne, et exercer la ligne de compteur de « À vérifier ».
 
-### 8. Limites
+### 9. Limites
 
 - La chaîne de versions est partiellement hypothétique (V27.1 et V28.1 notamment).
 - La version testée dans la campagne de 10 tests critiques est supposée être la V31, sans confirmation explicite.
-- Les V32 et V33 n'ont pas été testées.
-- Le rendu de l'encart dans L'OréalGPT n'est pas encore vérifié.
+- Les V32 et V34 n'ont pas été testées. La V33 l'a été une seule fois par test.
+- Le rendu de l'encart de la V33 n'a pas pu être évalué à partir du texte collé, et le rendu des tableaux de la V34 n'est pas vérifié dans L'OréalGPT.
+- Les causes attribuées aux défauts de la V33 sont des hypothèses.
+- La V34 contient une exemption (Résumé sans numéros de notes) qui s'écarte de la règle « chaque élément du texte renvoie à une source nommée » : à surveiller en test.
 - Une revue par un expert CIR ou FINECO reste nécessaire avant tout déploiement.
